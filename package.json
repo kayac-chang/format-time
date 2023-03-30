@@ -1,0 +1,34 @@
+{
+  "version": "0.1.0",
+  "author": "kayac-chang <egg734631@gmail.com>",
+  "license": "MIT",
+  "sideEffects": false,
+  "scripts": {
+    "test": "vitest",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint \"{src,apps,libs,test}/**/*.ts\""
+  },
+  "prettier": {},
+  "eslintIgnore": [
+    "/node_modules"
+  ],
+  "devDependencies": {
+    "@tsconfig/node-lts": "^18.12.1",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^8.34.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "jest-extended": "^3.2.4",
+    "prettier": "^2.8.4",
+    "typescript": "^5",
+    "vitest": "^0.29.0"
+  },
+  "engines": {
+    "node": ">=14.16"
+  },
+  "dependencies": {
+    "fp-ts": "^2.13.1"
+  }
+}
