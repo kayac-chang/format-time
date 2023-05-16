@@ -1,59 +1,60 @@
-import { pipe } from "fp-ts/lib/function";
-import { describe, test, expect } from "vitest";
+import { test, expect } from "vitest";
 
-const formattingTokensRegExp =
-  /[yYQqMLwIdDecihHKkms]o|(\w)\1*|''|'(''|[^'])+('|$)|./g;
-
-const formatter = {
-  yyyy: (date: Date) => date.getFullYear().toString(),
-  MM: (date: Date) => (date.getMonth() + 1).toString().padStart(2, "0"),
-  dd: (date: Date) => date.getDate().toString().padStart(2, "0"),
-} as const;
-
-function format(template: string) {
-  return (date: Date) =>
-    template
-      .match(formattingTokensRegExp)
-      ?.map((substring) => {
-        if (substring in formatter) {
-          const type = substring as keyof typeof formatter;
-          return formatter[type](date);
-        }
-        return substring;
-      })
-      .join("");
+type MapFn<A, B, Obj> = (value: A, key: keyof Obj) => B;
+function objectMap<A, B, Obj extends object>(fn: MapFn<A, B, Obj>, obj: Obj) {
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => [
+      key,
+      fn(value, key as keyof Obj),
+    ])
+  );
 }
 
-function toDate(duration: number) {
-  return new Date(duration);
-}
+// === JS version ===
+// function objectMap(fn, obj) {
+//   return Object.fromEntries(
+//     Object.entries(obj).map(([key, value]) => [
+//       key,
+//       fn(value, key),
+//     ])
+//   );
+// }
 
-describe("format-time", () => {
-  test(`
-    given template MM/dd/yyyy,
-    when parameter is Date(2020-01-01T00:00:00.000Z),
-    then result is 01/01/2020
-  `, () => {
-    const result = pipe(
-      new Date("2020-01-01T00:00:00.000Z"),
-      format("MM/dd/yyyy")
-    );
+test("object map", () => {
+  const test = {
+    address: "aa",
+    afternoon_inspection: "dd",
+    alert: "sdd",
+    apply_back_comment: null,
+    apply_back_time: "单独",
+    audit_comment: "sdd",
+    audit_time: "sss",
+    back_audit_time: "ff",
+    back_comment: "",
+    back_time: null,
+    build_area: "",
+    build_type: null,
+    charge_man: "",
+    child_insurance: null,
+    child_num: "",
+  };
+  const expected = {
+    address: "aa",
+    afternoon_inspection: "dd",
+    alert: "sdd",
+    apply_back_comment: "",
+    apply_back_time: "单独",
+    audit_comment: "sdd",
+    audit_time: "sss",
+    back_audit_time: "ff",
+    back_comment: "",
+    back_time: "",
+    build_area: "",
+    build_type: "",
+    charge_man: "",
+    child_insurance: "",
+    child_num: "",
+  };
 
-    expect(result).toBe("01/01/2020");
-  });
-
-  test(`
-    given template MM/dd/yyyy,
-    when parameter is 1577836800000,
-    then result is 01/01/2020
-  `, () => {
-    const result = pipe(
-      1577836800000,
-      toDate,
-      format("MM/dd/yyyy")
-      //
-    );
-
-    expect(result).toBe("01/01/2020");
-  });
+  expect(objectMap((value) => value ?? "", test)).toStrictEqual(expected);
 });
